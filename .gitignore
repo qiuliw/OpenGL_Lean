@@ -1,0 +1,8 @@
+build/
+*.mp4
+.vscode/
+output/
+out/
+cmake-build-debug/
+.idea/
+*.yuv
