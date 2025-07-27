@@ -4,17 +4,16 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-// shader硬编码可以定义一个宏 #define GET_STR(x) #x 会自动加双引号和换行
-#define GET_STR(x) #x
-
 float vertices[] = {
-    -0.5f, -0.5f, 0.0f, // 左下角
-    0.5f, -0.5f, 0.0f, // 右下角
-    0.0f,  0.5f, 0.0f  // 顶部
+    -0.5f, -0.5f, 0.0f, // 0
+    0.5f, -0.5f, 0.0f, // 1
+    0.0f,  0.5f, 0.0f, // 2
+    -0.5f, 0.7f, 0.0f // 3
+};
 
-    ,0.0f,  0.5f, 0.0f
-    ,-0.5f, -0.5f, 0.0f
-    ,-0.5f, 0.7f, 0.0f
+unsigned indices[] = { // 注意索引从0开始
+	0, 1, 3, // 第一个三角形
+	1, 2, 3 // 第二个三角形
 };
 
 const char *vertexShaderSource = R"(
@@ -78,8 +77,8 @@ int main(int, char**) {
     // 设置视口，左下角起始坐标点，可以绘制的宽高
     glViewport(0, 0, 800, 600);
     // 开启面剔除
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK); // 剔除背面
+    // glEnable(GL_CULL_FACE);
+    // glCullFace(GL_BACK); // 剔除背面
 
     // VAO
     unsigned int VAO;
@@ -92,10 +91,15 @@ int main(int, char**) {
     glBindBuffer(GL_ARRAY_BUFFER, VBO); // 绑定VBO
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    // set vertex attribute pointers
+    // set VBO
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
+    // EBO
+    unsigned int EBO;
+    glGenBuffers(1, &EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     // vertex shader
     unsigned int vertexShader;
@@ -128,7 +132,10 @@ int main(int, char**) {
 
         glBindVertexArray(VAO);
         glUseProgram(shaderProgram);
-        glDrawArrays(GL_TRIANGLES, 0, 6); // 绘制三角形, count: 顶点数量
+        // glDrawArrays(GL_TRIANGLES, 0, 6); // 绘制三角形, count: 顶点数量, 直接通过VBO顶点绘制
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);// 通过EBO索引绘制
 
         // 交换缓冲区
         glfwSwapBuffers(window); // 双缓冲区，一个用于显示，一个用于绘制
