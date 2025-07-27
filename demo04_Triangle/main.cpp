@@ -9,8 +9,12 @@
 
 float vertices[] = {
     -0.5f, -0.5f, 0.0f, // 左下角
-     0.5f, -0.5f, 0.0f, // 右下角
-     0.0f,  0.5f, 0.0f  // 顶部
+    0.5f, -0.5f, 0.0f, // 右下角
+    0.0f,  0.5f, 0.0f  // 顶部
+
+    ,0.0f,  0.5f, 0.0f
+    ,-0.5f, -0.5f, 0.0f
+    ,-0.5f, 0.7f, 0.0f
 };
 
 const char *vertexShaderSource = R"(
@@ -73,6 +77,9 @@ int main(int, char**) {
 
     // 设置视口，左下角起始坐标点，可以绘制的宽高
     glViewport(0, 0, 800, 600);
+    // 开启面剔除
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK); // 剔除背面
 
     // VAO
     unsigned int VAO;
@@ -109,9 +116,6 @@ int main(int, char**) {
     glAttachShader(shaderProgram, fragmentShader);
     glLinkProgram(shaderProgram);
 
-
-
-
     // 主渲染循环
     // 当前输入作用于当前帧
     while (!glfwWindowShouldClose(window)) {
@@ -124,7 +128,7 @@ int main(int, char**) {
 
         glBindVertexArray(VAO);
         glUseProgram(shaderProgram);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawArrays(GL_TRIANGLES, 0, 6); // 绘制三角形, count: 顶点数量
 
         // 交换缓冲区
         glfwSwapBuffers(window); // 双缓冲区，一个用于显示，一个用于绘制
