@@ -3,6 +3,9 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <cmath>
+
+using namespace std;
 
 float vertices[] = {
     -0.5f, -0.5f, 0.0f, // 0
@@ -26,12 +29,16 @@ const char *vertexShaderSource = R"(
     }
 )";
 
+// 片段着色器
 const char *fragmentShaderSource = R"(
     #version 330 core
     out vec4 FragColor;
+
+    uniform vec4 ourColor; // 在OpenGL程序代码中设定这个变量
+
     void main()
     {
-        FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f); // 绘制一个橙色三角形
+        FragColor = ourColor;
     }
 )";
 
@@ -131,11 +138,19 @@ int main(int, char**) {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f); // 设置清空缓冲区后填充的颜色，默认值，背景色
         glClear(GL_COLOR_BUFFER_BIT); // 清空缓冲区颜色
 
-        glBindVertexArray(VAO);
+        // 激活着色器
         glUseProgram(shaderProgram);
-        // glDrawArrays(GL_TRIANGLES, 0, 6); // 绘制三角形, count: 顶点数量, 直接通过VBO顶点绘制
 
+        // 更新uniform颜色
+        float timeValue = glfwGetTime();
+        float greenValue = sin(timeValue) / 2.0f + 0.5f;
+        int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
+        glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+        
+        // 绘制三角形
+        glBindVertexArray(VAO);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        // glDrawArrays(GL_TRIANGLES, 0, 6); // 绘制三角形, count: 顶点数量, 直接通过VBO顶点绘制
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);// 通过EBO索引绘制
 
         // 交换缓冲区
