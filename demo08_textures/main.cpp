@@ -26,34 +26,6 @@ unsigned int indices[] = {
 };
 
 
-
-// 程序会依次处理每个顶点
-const char *vertexShaderSource = R"(
-    #version 330 core
-    layout (location = 0) in vec3 aPos;   // 位置变量的属性位置值为 0 
-    layout (location = 1) in vec3 aColor; // 颜色变量的属性位置值为 1
-    
-    out vec3 ourColor; // 向片段着色器输出一个颜色
-
-    void main()
-    {
-        gl_Position = vec4(aPos, 1.0);
-        ourColor = aColor; // 将ourColor设置为我们从顶点数据那里得到的输入颜色
-    }
-)";
-
-// 片段着色器
-const char *fragmentShaderSource = R"(
-    #version 330 core
-    out vec4 FragColor;  
-    in vec3 ourColor;
-
-    void main()
-    {
-        FragColor = vec4(ourColor, 1.0);
-    }
-)";
-
 void processInput(GLFWwindow *window) {
     // 检查ESC键状态
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
@@ -152,17 +124,17 @@ int main(int, char**) {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    // vertex shader
-    unsigned int vertexShader;
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL); // count: 几个字串
-    glCompileShader(vertexShader);
+    // // vertex shader
+    // unsigned int vertexShader;
+    // vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    // glShaderSource(vertexShader, 1, &vertexShaderSource, NULL); // count: 几个字串
+    // glCompileShader(vertexShader);
 
-    // fragment shader
-    unsigned int fragmentShader;
-    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
+    // // fragment shader
+    // unsigned int fragmentShader;
+    // fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    // glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+    // glCompileShader(fragmentShader);
 
     // 从文件读取shader
     Shader *shader = new Shader("vertex.frag","fragment.frag");
